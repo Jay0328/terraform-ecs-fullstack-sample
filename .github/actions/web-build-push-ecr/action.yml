@@ -1,0 +1,40 @@
+name: 'Build and Push Web to ECR'
+description: 'Build and Push Web to ECR'
+
+inputs:
+  context:
+    description: 'Docker build context'
+    required: true
+  file:
+    description: 'Docker build file'
+    required: true
+  tag:
+    description: 'Docker image tag'
+    required: true
+  repository:
+    description: 'ECR Repository'
+    required: true
+outputs:
+  image:
+    description: 'Docker image name'
+    value: ${{ steps.build-image.outputs.image }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        IMAGE_TAG: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ inputs.tag }}
+      shell: bash
+      run: |
+        docker build -t $IMAGE_TAG ${{ inputs.context }} -f ${{ inputs.file }}
+        docker push $IMAGE_TAG
+        echo "::set-output name=image::$IMAGE_TAG"
+    - name: Logout of Amazon ECR
+      if: always()
+      shell: bash
+      run: docker logout ${{ steps.login-ecr.outputs.registry }}

@@ -1,0 +1,19 @@
+name: 'Get Nrwl(Nx) Affected Projects'
+description: 'Get Nrwl(Nx) Affected Projects'
+
+inputs:
+  target:
+    description: 'Affected target'
+    required: true
+  type:
+    description: 'Affected type'
+    required: true
+outputs:
+  projects:
+    description: 'Affected projects json string'
+  no-affected:
+    description: 'If no affected projects'
+
+runs:
+  using: 'node16'
+  main: index.mjs

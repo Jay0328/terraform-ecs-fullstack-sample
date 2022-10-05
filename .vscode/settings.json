@@ -1,0 +1,10 @@
+{
+  "search.exclude": {
+    "**/.git": true,
+    "**/.terragrunt-cache": true,
+    "**/node_modules": true
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///Users/jaychen/Documents/code/node-github-actions-test/.github/workflows/deploy.yml"
+  }
+}

@@ -1,0 +1,22 @@
+name: 'Install Node Dependencies'
+description: 'Install Node Dependencies'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get node modules cache infos
+      id: cache-infos
+      shell: bash
+      run: |
+        echo "::set-output name=node-version::$(node -v)"
+        echo "::set-output name=pnpm-cache-dir::$(pnpm store path)"
+    - name: Use node_modules cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.cache-infos.outputs.pnpm-cache-dir }}
+        key: ${{ runner.os }}-node-${{ steps.cache-infos.outputs.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ steps.cache-infos.outputs.node-version }}-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

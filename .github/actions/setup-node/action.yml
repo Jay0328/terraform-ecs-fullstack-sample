@@ -1,0 +1,24 @@
+name: 'Setup Node'
+description: 'Setup Node'
+
+inputs:
+  node-version:
+    description: 'Node Version'
+    required: true
+  pnpm-version:
+    description: 'Pnpm version'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup node
+      id: setup-node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.2.2
+      with:
+        version: ${{ inputs.pnpm-version }}
+        run_install: false
