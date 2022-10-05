@@ -16,7 +16,6 @@ variable "vpc" {
     vpc_cidr_block          = string
     public_subnets          = set(string)
     private_subnets         = set(string)
-    private_route_table_ids = set(string)
   })
 }
 

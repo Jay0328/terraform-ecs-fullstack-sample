@@ -6,11 +6,6 @@ variable "env" {
   type = string
 }
 
-variable "tags" {
-  type    = map(any)
-  default = {}
-}
-
 variable "vpc" {
   type = object({
     cidr = string
@@ -25,4 +20,9 @@ variable "vpc" {
     enable_nat_gateway   = bool
     enable_vpn_gateway   = bool
   })
+}
+
+variable "tags" {
+  type    = map(any)
+  default = {}
 }
