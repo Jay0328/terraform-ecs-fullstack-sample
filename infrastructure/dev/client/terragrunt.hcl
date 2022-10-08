@@ -23,7 +23,7 @@ locals {
   port = 80
 
   tags = {
-    app = local.app
+    App = local.app
   }
 }
 
@@ -41,7 +41,7 @@ inputs = {
   }
 
   ecs_container = {
-    image = "${dependency.ecr.outputs.wrapper[local.app].repository_url}:${local.env}"
+    image = "${dependency.ecr.outputs.repositories[local.app].repository_url}:${local.env}"
     port  = local.port
   }
 

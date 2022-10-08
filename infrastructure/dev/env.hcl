@@ -2,7 +2,7 @@ locals {
   env = "dev"
 
   tags = {
-    env = local.env
+    Environments = local.env
   }
 }
 

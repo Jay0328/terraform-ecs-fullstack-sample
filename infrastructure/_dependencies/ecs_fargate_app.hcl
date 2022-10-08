@@ -2,8 +2,8 @@ dependency "ecr" {
   config_path = "../../shared/ecr"
 }
 
-dependency "vpc" {
-  config_path = "../vpc"
+dependency "network" {
+  config_path = "../network"
 }
 
 dependency "ecs_cluster" {
@@ -11,11 +11,11 @@ dependency "ecs_cluster" {
 }
 
 terraform {
-  source = "../../modules//project/ecs_app"
+  source = "../../modules//ecs_app"
 }
 
 inputs = {
-  vpc = dependency.vpc.outputs
+  network = dependency.network.outputs
 
   ecs_cluster_name = dependency.ecs_cluster.outputs.name
 

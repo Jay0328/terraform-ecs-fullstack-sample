@@ -15,5 +15,5 @@ locals {
 generate = local.generate
 
 terraform {
-  source = "${get_parent_terragrunt_dir("root")}/modules//project/ecs_cluster"
+  source = "${get_parent_terragrunt_dir("root")}/modules//ecs_cluster"
 }

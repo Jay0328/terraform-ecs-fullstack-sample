@@ -9,7 +9,7 @@ locals {
   backend_dynamodb_table = "${local.project}-terraform"
 
   tags = {
-    project = local.project
+    Project = local.project
   }
 }
 
