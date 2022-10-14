@@ -10,6 +10,14 @@ variable "app" {
   type = string
 }
 
+variable "domain_name" {
+  type = string
+}
+
+variable "subdomain_prefix" {
+  type = string
+}
+
 variable "network" {
   type = object({
     vpc_id          = string
@@ -40,8 +48,9 @@ variable "ecs_cluster_name" {
 
 variable "ecs_container" {
   type = object({
-    image = string
-    port  = number
+    image_repository = string
+    image_tag        = string
+    port             = number
   })
 }
 
@@ -56,8 +65,9 @@ variable "ecs_task" {
 
 variable "ecs_service" {
   type = object({
-    launch_type   = string
-    desired_count = number
+    launch_type          = string
+    desired_count        = number
+    force_new_deployment = bool
   })
 }
 

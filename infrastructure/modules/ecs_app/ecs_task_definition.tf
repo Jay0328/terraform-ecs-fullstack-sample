@@ -12,7 +12,7 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode([
     {
       name      = local.name
-      image     = var.ecs_container.image
+      image     = "${var.ecs_container.image_repository}:${var.ecs_container.image_tag}"
       cpu       = var.ecs_task.cpu
       memory    = var.ecs_task.memory
       essential = true

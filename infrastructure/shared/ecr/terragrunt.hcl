@@ -1,14 +1,7 @@
 include "root" {
   path           = find_in_parent_folders("root.hcl")
-  expose         = true
   merge_strategy = "deep"
 }
-
-locals {
-  generate = read_terragrunt_config(find_in_parent_folders("root.hcl")).generate
-}
-
-generate = local.generate
 
 terraform {
   source = "${get_parent_terragrunt_dir("root")}/modules//ecr"
@@ -16,7 +9,6 @@ terraform {
 
 inputs = {
   apps = [
-    "client",
     "server"
   ]
 

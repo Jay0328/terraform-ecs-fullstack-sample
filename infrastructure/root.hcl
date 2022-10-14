@@ -1,5 +1,6 @@
 locals {
-  project = "just-test"
+  project     = "just-test"
+  domain_name = "daione.com"
 
   terraform_version    = "=1.3.1"
   aws_provider_version = "=4.33.0"
@@ -42,23 +43,24 @@ provider "aws" {
 EOF
 }
 
-# remote_state {
-#   backend = "s3"
-#   config = {
-#     bucket         = local.backend_bucket
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     encrypt        = true
-#     region         = local.aws_region
-#     dynamodb_table = local.backend_dynamodb_table
-#   }
-#   generate = {
-#     path = "backend.tf"
-#     if_exists = "overwrite"
-#   }
-# }
+remote_state {
+  backend = "s3"
+  config = {
+    bucket         = local.backend_bucket
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    encrypt        = true
+    region         = local.aws_region
+    dynamodb_table = local.backend_dynamodb_table
+  }
+  generate = {
+    path = "backend.tf"
+    if_exists = "overwrite"
+  }
+}
 
 inputs = {
-  project = local.project
+  project     = local.project
+  domain_name = local.domain_name
 
   tags = local.tags
 }

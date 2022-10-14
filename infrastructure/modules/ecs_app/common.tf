@@ -4,6 +4,8 @@ locals {
     Name = local.name
   })
 
+  subdomain = "${var.subdomain_prefix}-${var.env}"
+
   alb_name = local.name
   alb_tags = local.tags
 

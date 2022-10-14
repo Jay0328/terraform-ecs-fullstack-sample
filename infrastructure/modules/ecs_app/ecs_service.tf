@@ -5,6 +5,7 @@ resource "aws_ecs_service" "this" {
   launch_type                       = var.ecs_service.launch_type
   desired_count                     = var.ecs_service.desired_count
   health_check_grace_period_seconds = 10
+  force_new_deployment              = var.ecs_service.force_new_deployment
 
   network_configuration {
     assign_public_ip = false
