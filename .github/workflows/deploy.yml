@@ -94,7 +94,7 @@ jobs:
         with:
           context: .
           file: ./docker/${{ env.ENV }}/${{ matrix.app }}.Dockerfile
-          tag: ${{ env.ENV }}-${{ github.sha }}
+          tag: ${{ env.ENV }}
           repository: ${{ env.PROJECT }}-${{ matrix.app }}
       - name: Download task definition
         run: |
