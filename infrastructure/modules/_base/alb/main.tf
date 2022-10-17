@@ -75,16 +75,10 @@ resource "aws_alb_listener" "https" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = var.https_certificate_arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.this.arn
   }
-}
-
-resource "aws_alb_listener_certificate" "https_certificate" {
-  count = local.enable_https ? 1 : 0
-
-  listener_arn    = aws_alb_listener.https[0].arn
-  certificate_arn = var.https_certificate_arn
 }

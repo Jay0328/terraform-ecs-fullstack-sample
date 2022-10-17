@@ -1,3 +1,7 @@
+dependency "acm" {
+  config_path = "${get_repo_root()}/infrastructure/shared/acm"
+}
+
 dependency "ecr" {
   config_path = "${get_repo_root()}/infrastructure/shared/ecr"
 }
@@ -30,6 +34,8 @@ inputs = {
       path = "/health"
       port = local.port
     }
+    https_certificate_arn = dependency.acm.outputs.current_region_certificate_arn
+    enable_http2 = true
   }
 
   ecs_cluster_name = dependency.ecs_cluster.outputs.name
