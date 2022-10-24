@@ -19,7 +19,7 @@ env:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-base.yml@main
+    uses: ./.github/workflows/deploy-base.yml
     with:
       node-version: ${{ env.NODE_VERSION }}
       pnpm-version: ${{ env.PNPM_VERSION }}
