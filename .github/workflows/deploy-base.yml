@@ -83,7 +83,7 @@ jobs:
             const { PROJECTS, ENV } = process.env
             const projects = JSON.parse(PROJECTS);
 
-            for (const project in projects) {
+            for (const project of projects) {
               execSync(`./scripts/env/download.sh ${project} ${ENV}`)
             }
       - name: Build
