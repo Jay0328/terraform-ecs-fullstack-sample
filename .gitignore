@@ -8,6 +8,12 @@
 # dependencies
 node_modules
 
+# env files
+!.env
+.env.*
+!environment.ts
+environment.*.ts
+
 # terraform, terragrunt
 .terraform
 terraform.tfstate

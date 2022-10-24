@@ -14,7 +14,26 @@
         "generatePackageJson": true
       },
       "configurations": {
-        "production": {
+        "local": {
+          "fileReplacements": [
+            {
+              "replace": "apps/server/src/environments/environment.ts",
+              "with": "apps/server/src/environments/environment.local.ts"
+            }
+          ]
+        },
+        "dev": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/server/src/environments/environment.ts",
+              "with": "apps/server/src/environments/environment.dev.ts"
+            }
+          ]
+        },
+        "prod": {
           "optimization": true,
           "extractLicenses": true,
           "inspect": false,
@@ -29,12 +48,19 @@
     },
     "serve": {
       "executor": "@nrwl/node:node",
+      "defaultConfiguration": "local",
       "options": {
         "buildTarget": "server:build"
       },
       "configurations": {
-        "production": {
-          "buildTarget": "server:build:production"
+        "local": {
+          "buildTarget": "server:build:local"
+        },
+        "dev": {
+          "buildTarget": "server:build:dev"
+        },
+        "prod": {
+          "buildTarget": "server:build:prod"
         }
       }
     },

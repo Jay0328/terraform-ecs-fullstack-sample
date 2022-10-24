@@ -4,11 +4,17 @@
  */
 
 import * as express from 'express';
+import * as cors from 'cors';
+import { environment } from './environments';
 
 const app = express();
 
+if (environment.cors) {
+  app.use(cors(environment.cors));
+}
+
 app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to server!!!' });
+  res.send({ message: 'Welcome to Just Test' });
 });
 
 app.get('/health', (req, res) => {

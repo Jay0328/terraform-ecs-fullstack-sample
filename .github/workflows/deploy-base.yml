@@ -1,0 +1,130 @@
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        required: true
+      pnpm-version:
+        type: string
+        required: true
+      branch-name:
+        type: string
+        required: true
+      env:
+        type: string
+        required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+env:
+  PROJECT: just-test
+  AWS_REGION: ap-southeast-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      affected-projects: ${{ steps.affected-projects.outputs.projects }}
+      no-affected: ${{ steps.affected-projects.outputs.no-affected }}
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          lfs: 'true'
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - uses: actions/checkout@v3
+        name: Checkout (Pull Request)
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          lfs: 'true'
+          # By default, PRs will be checked-out based on the Merge Commit, but we want the actual branch HEAD.
+          ref: ${{ github.event.pull_request.head.sha }}
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - name: Setup Node
+        id: setup-node
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          pnpm-version: ${{ inputs.pnpm-version}}
+      - name: Install Dependencies
+        uses: ./.github/actions/install-node-dependencies
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+        with:
+          main-branch-name: ${{ inputs.branch-name }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Get affected projects
+        id: affected-projects
+        uses: ./.github/actions/nx-affected-projects
+        with:
+          target: build
+          type: app
+      - name: Download env files
+        if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
+        uses: actions/github-script@v6
+        env:
+          PROJECTS: ${{ steps.affected-projects.outputs.projects }}
+          ENV: ${{ inputs.env }}
+        with:
+          script: |
+            const { execSync } = require('child_process');
+
+            const { PROJECTS, ENV } = process.env
+            const projects = JSON.parse(PROJECTS);
+
+            for (const project in projects) {
+              execSync(`./scripts/env/download.sh ${project} ${ENV}`)
+            }
+      - name: Build
+        if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
+        run: npx nx affected --target=build --parallel=3
+      - uses: actions/upload-artifact@v3
+        if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
+        with:
+          name: dist
+          path: dist
+  deploy:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.no-affected != 'true' }}
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.build.outputs.affected-projects) }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Deploy Client
+        if: contains(fromJson('["client"]'), matrix.app)
+        uses: ./.github/actions/deploy-client
+        with:
+          project: ${{ env.PROJECT }}
+          app: ${{ matrix.app }}
+          env: ${{ inputs.env }}
+      - name: Deploy Server
+        if: contains(fromJson('["server"]'), matrix.app)
+        uses: ./.github/actions/deploy-server
+        with:
+          project: ${{ env.PROJECT }}
+          app: ${{ matrix.app }}
+          env: ${{ inputs.env }}

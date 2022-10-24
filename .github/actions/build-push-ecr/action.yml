@@ -1,5 +1,5 @@
-name: 'Build and Push Web to ECR'
-description: 'Build and Push Web to ECR'
+name: 'Build and Push ECR'
+description: 'Build and Push ECR'
 
 inputs:
   context:

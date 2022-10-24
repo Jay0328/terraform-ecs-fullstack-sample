@@ -1,0 +1,31 @@
+name: 'Deploy Client'
+description: 'Deploy Client'
+
+inputs:
+  project:
+    description: 'Project'
+    required: true
+  app:
+    description: 'App'
+    required: true
+  env:
+    description: 'Environment'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get cloudfront distribution id of s3 bucket
+      id: distribution-id
+      env:
+        BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
+      shell: bash
+      run: |
+        echo "::set-output id=node-version::$(aws cloudfront list-distributions --query "DistributionList.Items[*].{id:Id,origin:Origins.Items[0].Id}[?origin=='$BUCKET_NAME'].id" --output text)"
+    - name: Upload to s3 and invalidate cloudfront distribution
+      env:
+        BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
+      shell: bash
+      run: |
+        aws s3 sync ./dist/apps/${{ inputs.app }} s3://$BUCKET_NAME --delete --recursive
+        aws cloudfront create-invalidation --distribution-id ${{ steps.distribution-id.id }} --paths "/index.html"

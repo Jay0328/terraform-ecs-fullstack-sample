@@ -6,7 +6,6 @@
     "build": {
       "executor": "@nrwl/web:webpack",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
         "outputPath": "dist/apps/client",
@@ -21,13 +20,33 @@
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },
       "configurations": {
-        "development": {
+        "local": {
+          "fileReplacements": [
+            {
+              "replace": "apps/client/src/environments/environment.ts",
+              "with": "apps/client/src/environments/environment.local.ts"
+            }
+          ],
           "extractLicenses": false,
           "optimization": false,
           "sourceMap": true,
           "vendorChunk": true
         },
-        "production": {
+        "dev": {
+          "fileReplacements": [
+            {
+              "replace": "apps/client/src/environments/environment.ts",
+              "with": "apps/client/src/environments/environment.dev.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        },
+        "prod": {
           "fileReplacements": [
             {
               "replace": "apps/client/src/environments/environment.ts",
@@ -45,18 +64,22 @@
     },
     "serve": {
       "executor": "@nrwl/web:dev-server",
-      "defaultConfiguration": "development",
+      "defaultConfiguration": "local",
       "options": {
         "buildTarget": "client:build",
         "hmr": true,
         "proxyConfig": "apps/client/proxy.conf.json"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "client:build:development"
+        "local": {
+          "buildTarget": "client:build:local"
         },
-        "production": {
-          "buildTarget": "client:build:production",
+        "dev": {
+          "buildTarget": "client:build:dev",
+          "hmr": false
+        },
+        "prod": {
+          "buildTarget": "client:build:prod",
           "hmr": false
         }
       }

@@ -1,0 +1,33 @@
+name: 'Deploy Server'
+description: 'Deploy Server'
+
+inputs:
+  project:
+    description: 'Project'
+    required: true
+  app:
+    description: 'App'
+    required: true
+  env:
+    description: 'Environment'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Build and push image to Amazon ECR
+      id: build-image
+      uses: ./.github/actions/build-push-ecr
+      with:
+        context: .
+        file: ./docker/${{ inputs.env }}/${{ inputs.app }}.Dockerfile
+        tag: ${{ inputs.env }}
+        repository: ${{ inputs.project }}-${{ inputs.app }}
+    - name: Deploy Amazon ECS task definition
+      uses: ./.github/actions/deploy-ecs-task
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        task-definition-family: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
+        cluster: ${{ inputs.project }}-${{ inputs.env }}
+        container-name: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
+        service: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}

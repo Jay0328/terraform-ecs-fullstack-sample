@@ -1,6 +1,7 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// When building for production, this file is replaced with `environment.prod.ts`.
+import { Environment } from './types';
 
-export const environment = {
+export const environment: Environment = {
   production: false,
+
+  apiUrl: 'apiUrl',
 };
