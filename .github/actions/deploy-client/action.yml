@@ -27,5 +27,5 @@ runs:
         BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
       shell: bash
       run: |
-        aws s3 sync ./dist/apps/${{ inputs.app }} s3://$BUCKET_NAME --delete --recursive
+        aws s3 sync ./dist/apps/${{ inputs.app }} s3://$BUCKET_NAME --delete
         aws cloudfront create-invalidation --distribution-id ${{ steps.distribution-id.id }} --paths "/index.html"
