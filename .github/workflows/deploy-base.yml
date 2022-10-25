@@ -84,9 +84,11 @@ jobs:
             const projects = JSON.parse(PROJECTS);
 
             for (const project of projects) {
-              console.log(`./scripts/env/download.sh ${project} ${ENV}`);
               execSync(`./scripts/env/download.sh ${project} ${ENV}`)
             }
+      - run: |
+          ls -al apps/client/src/environments
+          ls -al apps/server/src/environments
       # - name: Build
       #   if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
       #   run: npx nx affected --target=build --parallel=3

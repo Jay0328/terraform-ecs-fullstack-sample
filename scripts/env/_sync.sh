@@ -5,7 +5,7 @@ shift 3;
 
 file=environment.$env.ts
 
-if [ "$env" == "all" ]
+if [ "$env" = "all" ]
 then
   aws s3 sync $source $target --exclude "*.ts" --include "environment.*.ts" $@
 else
