@@ -15,7 +15,7 @@ export function App() {
 
   return (
     <div>
-      client!
+      client
       <br />
       {message}
     </div>
