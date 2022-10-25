@@ -7,7 +7,8 @@ module "ecr" {
 
   repository_name                   = local.repository_name
   repository_read_write_access_arns = var.repository_read_write_access_arns
-  repository_lifecycle_policy = var.repository_lifecycle_policy
+  repository_image_tag_mutability   = var.repository_image_tag_mutability
+  repository_lifecycle_policy       = var.repository_lifecycle_policy
 
   tags = var.tags
 }
