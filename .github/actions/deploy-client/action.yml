@@ -21,7 +21,7 @@ runs:
         BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
       shell: bash
       run: |
-        echo "::set-output id=node-version::$(aws cloudfront list-distributions --query "DistributionList.Items[*].{id:Id,origin:Origins.Items[0].Id}[?origin=='$BUCKET_NAME'].id" --output text)"
+        echo "::set-output name=id::$(aws cloudfront list-distributions --query "DistributionList.Items[*].{id:Id,origin:Origins.Items[0].Id}[?origin=='$BUCKET_NAME'].id" --output text)"
     - name: Upload to s3 and invalidate cloudfront distribution
       env:
         BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
