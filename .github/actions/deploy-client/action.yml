@@ -15,8 +15,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get cloudfront distribution id of s3 bucket
-      id: distribution-id
+    - name: Get cloudfront distribution infos of s3 bucket
+      id: distribution-infos
       env:
         BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
       shell: bash
@@ -28,5 +28,4 @@ runs:
       shell: bash
       run: |
         aws s3 sync ./dist/apps/${{ inputs.app }} s3://$BUCKET_NAME --delete
-        echo ${{ steps.distribution-id.id }}
-        aws cloudfront create-invalidation --distribution-id ${{ steps.distribution-id.id }} --paths "/index.html"
+        aws cloudfront create-invalidation --distribution-id ${{ steps.distribution-infos.outputs.id }} --paths "/index.html"
