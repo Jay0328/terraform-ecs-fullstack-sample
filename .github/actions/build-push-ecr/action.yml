@@ -33,7 +33,7 @@ runs:
       run: |
         docker build -t $IMAGE_TAG ${{ inputs.context }} -f ${{ inputs.file }}
         docker push $IMAGE_TAG
-        echo "::set-output name=image::$IMAGE_TAG"
+        echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
     - name: Logout of Amazon ECR
       if: always()
       shell: bash

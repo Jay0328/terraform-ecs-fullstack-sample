@@ -21,11 +21,10 @@ runs:
         BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
       shell: bash
       run: |
-        echo "::set-output name=id::$(aws cloudfront list-distributions --query "DistributionList.Items[*].{id:Id,origin:Origins.Items[0].Id}[?origin=='$BUCKET_NAME'].id" --output text)"
+        echo "bucket-name=$BUCKET_NAME" >> $GITHUB_OUTPUT
+        echo "id=$(aws cloudfront list-distributions --query "DistributionList.Items[*].{id:Id,origin:Origins.Items[0].Id}[?origin=='$BUCKET_NAME'].id" --output text)" >> $GITHUB_OUTPUT
     - name: Upload to s3 and invalidate cloudfront distribution
-      env:
-        BUCKET_NAME: ${{ inputs.project }}-${{ inputs.app }}-${{ inputs.env }}
       shell: bash
       run: |
-        aws s3 sync ./dist/apps/${{ inputs.app }} s3://$BUCKET_NAME --delete
+        aws s3 sync ./dist/apps/${{ inputs.app }} s3://${{ steps.distribution-infos.outputs.bucket-name }} --delete
         aws cloudfront create-invalidation --distribution-id ${{ steps.distribution-infos.outputs.id }} --paths "/index.html"
