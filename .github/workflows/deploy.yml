@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  deploy-dev:
     uses: ./.github/workflows/deploy-base.yml
     with:
       node-version: 16.17.0

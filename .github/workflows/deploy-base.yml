@@ -74,60 +74,57 @@ jobs:
         if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
         uses: actions/github-script@v6
         env:
-          PROJECTS: ${{ steps.affected-projects.outputs.projects }}
+          APPS: ${{ steps.affected-projects.outputs.projects }}
           ENV: ${{ inputs.env }}
         with:
           script: |
             const { execSync } = require('child_process');
 
-            const { PROJECTS, ENV } = process.env
-            const projects = JSON.parse(PROJECTS);
+            const { APPS, ENV } = process.env
+            const apps = JSON.parse(APPS);
 
-            for (const project of projects) {
-              execSync(`./scripts/env/download.sh ${project} ${ENV}`)
+            for (const app of apps) {
+              execSync(`./scripts/env/download.sh ${app} ${ENV}`)
             }
-      - run: |
-          ls -al apps/client/src/environments
-          ls -al apps/server/src/environments
-      # - name: Build
-      #   if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
-      #   run: npx nx affected --target=build --parallel=3
-      # - uses: actions/upload-artifact@v3
-      #   if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
-      #   with:
-      #     name: dist
-      #     path: dist
-  # deploy:
-  #   needs:
-  #     - build
-  #   runs-on: ubuntu-latest
-  #   if: ${{ needs.build.outputs.no-affected != 'true' }}
-  #   strategy:
-  #     matrix:
-  #       app: ${{ fromJson(needs.build.outputs.affected-projects) }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: dist
-  #         path: dist
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ env.AWS_REGION }}
-  #     - name: Deploy Client
-  #       if: contains(fromJson('["client"]'), matrix.app)
-  #       uses: ./.github/actions/deploy-client
-  #       with:
-  #         project: ${{ env.PROJECT }}
-  #         app: ${{ matrix.app }}
-  #         env: ${{ inputs.env }}
-  #     - name: Deploy Server
-  #       if: contains(fromJson('["server"]'), matrix.app)
-  #       uses: ./.github/actions/deploy-server
-  #       with:
-  #         project: ${{ env.PROJECT }}
-  #         app: ${{ matrix.app }}
-  #         env: ${{ inputs.env }}
+      - name: Build
+        if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
+        run: npx nx affected --target=build --parallel=3
+      - uses: actions/upload-artifact@v3
+        if: ${{ steps.affected-projects.outputs.no-affected != 'true' }}
+        with:
+          name: dist
+          path: dist
+  deploy:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.no-affected != 'true' }}
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.build.outputs.affected-projects) }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Deploy Client
+        if: contains(fromJson('["client"]'), matrix.app)
+        uses: ./.github/actions/deploy-client
+        with:
+          project: ${{ env.PROJECT }}
+          app: ${{ matrix.app }}
+          env: ${{ inputs.env }}
+      - name: Deploy Server
+        if: contains(fromJson('["server"]'), matrix.app)
+        uses: ./.github/actions/deploy-server
+        with:
+          project: ${{ env.PROJECT }}
+          app: ${{ matrix.app }}
+          env: ${{ inputs.env }}
