@@ -11,9 +11,39 @@ inputs:
 outputs:
   projects:
     description: 'Affected projects json string'
+    value: ${{ steps.this.outputs.projects }}
   no-affected:
     description: 'If no affected projects'
+    value: ${{ steps.this.outputs.no-affected }}
 
 runs:
-  using: 'node16'
-  main: index.mjs
+  using: composite
+  steps:
+    - name: Get Nrwl(Nx) Affected Projects
+      id: this
+      uses: actions/github-script@v6
+      env:
+        TARGET: ${{ inputs.target }}
+        TYPE: ${{ inputs.type }}
+      with:
+        script: |
+          const { execSync } = require('child_process');
+
+          const { TARGET, TYPE } = process.env
+
+          const affectedInfos = execSync(
+            `npx nx print-affected --target=${TARGET} --type=${TYPE}`,
+            {
+              encoding: 'utf-8',
+            }
+          );
+          const { projects } = JSON.parse(affectedInfos);
+          const stringifiedProjects = JSON.stringify(projects);
+          const noAffected = projects.length === 0;
+
+          process.stdout.write('\n');
+          process.stdout.write(`projects: ${stringifiedProjects}\n`);
+          process.stdout.write(`no-affected: ${noAffected}\n`);
+          process.stdout.write('\n');
+          core.setOutput('projects', stringifiedProjects);
+          core.setOutput('no-affected', noAffected);
