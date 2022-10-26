@@ -14,7 +14,7 @@ if (environment.cors) {
 }
 
 app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to Just Test!!' });
+  res.send({ message: 'Welcome to Just Test' });
 });
 
 app.get('/health', (req, res) => {
