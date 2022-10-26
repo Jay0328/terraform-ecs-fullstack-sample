@@ -1,14 +1,33 @@
 on:
   workflow_call:
-  workflow_dispatch:
     inputs:
       branch-name:
-        description: "The git branch name for calculating affected"
         type: string
         required: true
       env:
-        description: "The environment of project"
         type: string
+        required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+  workflow_dispatch:
+    inputs:
+      branch-name:
+        description: 'The git branch name for calculating affected'
+        type: choice
+        options:
+          - main
+        required: true
+      env:
+        description: 'The environment of project'
+        type: choice
+        options:
+          - dev
+          - staging
+          - qa
+          - prod
         required: true
     secrets:
       AWS_ACCESS_KEY_ID:
