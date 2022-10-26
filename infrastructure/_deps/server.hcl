@@ -2,6 +2,10 @@ dependency "acm" {
   config_path = "${get_repo_root()}/infrastructure/shared/acm"
 }
 
+dependency "iam" {
+  config_path = "${get_repo_root()}/infrastructure/shared/iam"
+}
+
 dependency "ecr" {
   config_path = "${get_repo_root()}/infrastructure/shared/ecr"
 }
@@ -48,6 +52,8 @@ inputs = {
   ecs_task = {
     network_mode             = "awsvpc"
     requires_compatibilities = ["FARGATE"]
+
+    execution_role_arn = dependency.iam.outputs.ecs_task_execution_role_arn
   }
 
   ecs_service = {

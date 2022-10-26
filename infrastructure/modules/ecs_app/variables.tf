@@ -60,6 +60,8 @@ variable "ecs_task" {
     requires_compatibilities = set(string)
     cpu                      = number
     memory                   = number
+
+    execution_role_arn = string
   })
 }
 

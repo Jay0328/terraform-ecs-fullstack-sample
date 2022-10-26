@@ -1,14 +1,10 @@
-data "aws_iam_role" "ecs_execution" {
-  name = "ecsTaskExecutionRole"
-}
-
 resource "aws_ecs_task_definition" "this" {
   family                   = local.name
   network_mode             = var.ecs_task.network_mode
   requires_compatibilities = var.ecs_task.requires_compatibilities
   cpu                      = var.ecs_task.cpu
   memory                   = var.ecs_task.memory
-  execution_role_arn       = data.aws_iam_role.ecs_execution.arn
+  execution_role_arn       = var.ecs_task.execution_role_arn
   container_definitions = jsonencode([
     {
       name      = local.name
