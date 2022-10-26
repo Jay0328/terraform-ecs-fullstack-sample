@@ -1,16 +1,13 @@
 on:
   workflow_call:
+  workflow_dispatch:
     inputs:
-      node-version:
-        type: string
-        required: true
-      pnpm-version:
-        type: string
-        required: true
       branch-name:
+        description: "The git branch name for calculating affected"
         type: string
         required: true
       env:
+        description: "The environment of project"
         type: string
         required: true
     secrets:
@@ -20,6 +17,8 @@ on:
         required: true
 
 env:
+  NODE_VERSION: 16.18.0
+  PNPM_VERSION: 7.14.0
   PROJECT: just-test
   AWS_REGION: ap-southeast-1
 
@@ -50,8 +49,8 @@ jobs:
         id: setup-node
         uses: ./.github/actions/setup-node
         with:
-          node-version: ${{ inputs.node-version }}
-          pnpm-version: ${{ inputs.pnpm-version}}
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - name: Install Dependencies
         uses: ./.github/actions/install-node-dependencies
       - name: Derive appropriate SHAs for base and head for `nx affected` commands

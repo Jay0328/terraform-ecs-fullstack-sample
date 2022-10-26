@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Dev
 
 on:
   push:
@@ -16,8 +16,6 @@ jobs:
   deploy-dev:
     uses: ./.github/workflows/deploy-base.yml
     with:
-      node-version: 16.17.0
-      pnpm-version: 7.13.6
       branch-name: main
       env: dev
     secrets: inherit
