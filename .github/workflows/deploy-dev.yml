@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   deploy-dev:
-    uses: ./.github/workflows/deploy-base.yml
+    uses: ./.github/workflows/deploy.yml
     with:
       branch-name: main
       env: dev
