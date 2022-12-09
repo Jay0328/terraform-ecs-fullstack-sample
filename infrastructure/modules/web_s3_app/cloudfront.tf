@@ -38,7 +38,7 @@ resource "aws_cloudfront_distribution" "s3" {
   }
 
   custom_error_response {
-    error_code            = 404
+    error_code            = 403
     error_caching_min_ttl = 86400
     response_code         = 200
     response_page_path    = "/index.html"
