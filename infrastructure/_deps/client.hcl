@@ -7,7 +7,7 @@ dependency "network" {
 }
 
 locals {
-  app_config = read_terragrunt_config("${get_repo_root()}/infrastructure/_apps/server.hcl")
+  app_config = read_terragrunt_config("${get_repo_root()}/infrastructure/_apps/client.hcl")
 
   app  = local.app_config.locals.app
 }
